@@ -66,10 +66,10 @@ namespace TCC
                     ElementId diagramaId = refdiagram.ElementId;
                     diagram = uidoc.Document.GetElement(diagramaId);*/
 
-                    //diagram = doc.GetElement(_added_element_ids[0]);
+                    //diagram = doc.GetElement(_added_element_ids[0]);z
 
                     //Getting panel's name by asking it
-                    string quadro = Interaction.InputBox("INSIRA O NOME DO QUADRO", "PEDRO ELÉTRICA", "", -1, -1);
+                    string quadro = Interaction.InputBox("INSIRA O NOME DO QUADRO", "PEDRO ELÉTRICA teste", "", -1, -1);
 
                     //Getting the element by filtering and comparing to name of the panel
                     List<BuiltInCategory> panelCategory = new List<BuiltInCategory>();
