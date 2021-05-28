@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Ribbon</Text>
+    <Name>Ribbon</Name>
+    <Assembly>C:\Users\pedro\source\repos\EletricaBR\bin\Debug\EletricaBR1.dll</Assembly>
+    <AddInId>76B35907-9DA0-4B73-BB80-D0994DA85F3B</AddInId>
+    <FullClassName>EletricaBR.HerdandoParametros</FullClassName>
+    <VendorId>Pedro</VendorId>
+  </AddIn>
+</RevitAddIns>

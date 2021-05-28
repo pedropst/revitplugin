@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>UnifilarDiagram</Text>
+    <Name>UnifilarDiagram</Name>
+    <Assembly>TCC.dll</Assembly>
+    <AddInId>7911ea3e-10f3-4e82-b57b-b6eb4b39923f</AddInId>
+    <FullClassName>TCC.DiagramaUnifilar</FullClassName>
+    <VendorId>Pedro</VendorId>
+  </AddIn>
+  <AddIn Type="Application">
+    <Text>Ribbon</Text>
+    <Name>Ribbon</Name>
+    <Assembly>TCC.dll</Assembly>
+    <AddInId>bdc9d9da-6052-4ea2-ab30-22dc820a50b3</AddInId>
+    <FullClassName>TCC.Ribbon</FullClassName>
+    <VendorId>Pedro</VendorId>
+  </AddIn>
+</RevitAddIns>
