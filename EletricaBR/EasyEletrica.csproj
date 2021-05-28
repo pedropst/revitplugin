@@ -8,8 +8,8 @@
     <ProjectGuid>{C34A41DF-FAC8-4AC3-A31D-90934414B9D3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TCC</RootNamespace>
-    <AssemblyName>TCC</AssemblyName>
+    <RootNamespace>EasyEletrica</RootNamespace>
+    <AssemblyName>EasyEletrica</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationManifest>TCC.addin</ApplicationManifest>
+    <ApplicationManifest>EasyEletrica.addin</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MetroFramework, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
@@ -179,7 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="TCC.addin" />
+    <None Include="EasyEletrica.addin" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DebugNode.resx">

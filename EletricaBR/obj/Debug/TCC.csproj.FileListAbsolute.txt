@@ -107,3 +107,16 @@ C:\Users\pedro\source\repos\EletricaBR\obj\Debug\TCC.WiringWindow.resources
 C:\Users\pedro\source\repos\EletricaBR\obj\Debug\TCC.dll
 C:\Users\pedro\source\repos\EletricaBR\obj\Debug\TCC.pdb
 C:\Users\pedro\source\repos\EletricaBR\obj\Debug\TCC.SwitchSystem.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.csprojAssemblyReference.cache
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.csproj.ResolveComReference.cache
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.DebugNode.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.EditWires.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.Form1.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.SwitchSystem.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.MenuList.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.MenuPanel.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\EasyEletrica.Properties.Resources.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.WindowList.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.WiringWindow.resources
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.csproj.GenerateResource.cache
+C:\Users\pedro\Desktop\RevitGIT\EletricaBR\obj\Debug\TCC.csproj.CoreCompileInputs.cache
