@@ -14,7 +14,7 @@ using Autodesk.Revit.UI;
 using Microsoft.VisualBasic;
 
 
-namespace TCC
+namespace EasyEletrica
 {
     //SEMPRE IRÁ ESCREVER ESSAS DUAS PRÓXIMAS LINHAS SE ESTIVER CRIANDO UM ARQUIVO QUE IRÁ INTERAGIR COM O REVIT
     [TransactionAttribute(TransactionMode.Manual)]

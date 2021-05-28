@@ -1,19 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <RevitAddIns>
   <AddIn Type="Command">
-    <Text>UnifilarDiagram</Text>
-    <Name>UnifilarDiagram</Name>
-    <Assembly>TCC.dll</Assembly>
-    <AddInId>7911ea3e-10f3-4e82-b57b-b6eb4b39923f</AddInId>
-    <FullClassName>TCC.DiagramaUnifilar</FullClassName>
+    <Text>Diagrama Unifilar</Text>
+    <Name>Diagrama Unifilar</Name>
+    <Assembly>EasyEletrica.dll</Assembly>
+    <AddInId>7DAEAEEC-0B2D-482D-BDBB-C9216F8DEAC2</AddInId>
+    <FullClassName>EasyEletrica.DiagramaUnifilar</FullClassName>
+    <VendorId>Pedro</VendorId>
+  </AddIn>
+  <AddIn Type="Command">
+    <Text>Trocando Circuito</Text>
+    <Name>Trocando Circuito</Name>
+    <Assembly>EasyEletrica.dll</Assembly>
+    <AddInId>FD74B31E-CBBF-423A-856F-30B73120705C</AddInId>
+    <FullClassName>EasyEletrica.ChangingCircuit</FullClassName>
+    <VendorId>Pedro</VendorId>
+  </AddIn>
+  <AddIn Type="Command">
+    <Text>Trocando Retorno</Text>
+    <Name>Trocando Retorno</Name>
+    <Assembly>EasyEletrica.dll</Assembly>
+    <AddInId>DCF14FB7-01F8-452A-BCFD-0319B5CB419F</AddInId>
+    <FullClassName>EasyEletrica.ChangingSwitch</FullClassName>
     <VendorId>Pedro</VendorId>
   </AddIn>
   <AddIn Type="Application">
     <Text>Ribbon</Text>
     <Name>Ribbon</Name>
-    <Assembly>TCC.dll</Assembly>
-    <AddInId>bdc9d9da-6052-4ea2-ab30-22dc820a50b3</AddInId>
-    <FullClassName>TCC.Ribbon</FullClassName>
+    <Assembly>EasyEletrica.dll</Assembly>
+    <AddInId>13403166-4105-4BD4-B278-3535CFB61266</AddInId>
+    <FullClassName>EasyEletrica.Ribbon</FullClassName>
     <VendorId>Pedro</VendorId>
   </AddIn>
 </RevitAddIns>

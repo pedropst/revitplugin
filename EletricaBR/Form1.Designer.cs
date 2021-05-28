@@ -1,4 +1,4 @@
-﻿namespace TCC
+﻿namespace EasyEletrica
 {
     partial class Form1
     {

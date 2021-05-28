@@ -11,7 +11,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Form = System.Windows.Forms.Form;
 
-namespace TCC
+namespace EasyEletrica
 {
     public partial class SwitchSystem : Form
     {

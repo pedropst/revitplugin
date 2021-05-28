@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
-namespace TCC
+namespace EasyEletrica
 {
     public partial class MenuPanel : System.Windows.Forms.Form
     {

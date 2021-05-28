@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TCC
+namespace EasyEletrica
 {
     public class VirtualNode
     {

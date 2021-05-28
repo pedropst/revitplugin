@@ -10,7 +10,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Microsoft.VisualBasic;
 
-namespace TCC
+namespace EasyEletrica
 {
     class UnifilarSettings
     {

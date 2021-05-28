@@ -9,7 +9,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Microsoft.VisualBasic;
 
-namespace TCC
+namespace EasyEletrica
 {
     [TransactionAttribute(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]

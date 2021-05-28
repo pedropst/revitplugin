@@ -8,7 +8,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
 
-namespace TCC
+namespace EasyEletrica
 {
     class GetElementByClicking
     {

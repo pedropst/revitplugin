@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MetroFramework.Forms;
 
-namespace TCC
+namespace EasyEletrica
 {
     public partial class Form1 : MetroForm
     {

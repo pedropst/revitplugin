@@ -9,11 +9,11 @@ using System.Windows.Media;
 using System.Reflection;
 
 
-namespace TCC
+namespace EasyEletrica
 {
     public class Ribbon : IExternalApplication
     {
-        const string RIBBON_TAB = "PEDRO ELÉTRICA";
+        const string RIBBON_TAB = "EasyElétrica";
         const string RIBBON_PANEL = "AUTOMAÇÃO";
 
         public Result OnStartup(UIControlledApplication application)
@@ -51,7 +51,7 @@ namespace TCC
 
 
             //create the button data
-            PushButtonData btnData = new PushButtonData("DIAGRAMA UNIFILAR", "DIAGRAMA UNIFILAR", Assembly.GetExecutingAssembly().Location, "TCC.DiagramaUnifilar")
+            PushButtonData btnData = new PushButtonData("DIAGRAMA UNIFILAR", "DIAGRAMA UNIFILAR", Assembly.GetExecutingAssembly().Location, "EasyEletrica.DiagramaUnifilar")
             {
                 ToolTip = "Cria um diagrama unifilar.",
                 LongDescription = "Cria um diagrama unifilar completo.",
@@ -59,7 +59,7 @@ namespace TCC
                 LargeImage = imgSrc
             };
 
-            PushButtonData btnData1 = new PushButtonData("FIAÇÃO AUTOMÁTICA", "FIAÇÃO AUTOMÁTICA", Assembly.GetExecutingAssembly().Location, "TCC.Automation")
+            PushButtonData btnData1 = new PushButtonData("FIAÇÃO AUTOMÁTICA", "FIAÇÃO AUTOMÁTICA", Assembly.GetExecutingAssembly().Location, "EasyEletrica.Automation")
             {
                 ToolTip = "Passa a fiação pelos eletrodutos.",
                 LongDescription = "Passa toda a fiação dos eletrodutos.",

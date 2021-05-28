@@ -7,7 +7,7 @@ using Autodesk.Revit.UI;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace TCC
+namespace EasyEletrica
 {
     public struct Tomada
     {

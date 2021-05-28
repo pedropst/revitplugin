@@ -11,7 +11,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
-namespace TCC
+namespace EasyEletrica
 {
     public partial class WindowList : System.Windows.Forms.Form
     {

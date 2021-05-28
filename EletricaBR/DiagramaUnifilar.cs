@@ -1,155 +1,152 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Windows.Forms;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
-using Microsoft.VisualBasic;
 
-namespace TCC
+namespace EasyEletrica
 {
     [TransactionAttribute(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]
     class DiagramaUnifilar : IExternalCommand
     {
-        Element diagram;
+        Element diagram = null;
         List<Autodesk.Revit.DB.Electrical.ElectricalSystem> circuitList = new List<Autodesk.Revit.DB.Electrical.ElectricalSystem>();
         List<List<String>> circuitParameters = new List<List<String>>();
         List<List<Parameter>> diagramParameters = new List<List<Parameter>>();
-
+        List<List<String>> parametersOfCircuits = new List<List<String>>();
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            //Get UIDocument
             UIDocument uidoc = commandData.Application.ActiveUIDocument;
-            //Get Document
             Document doc = uidoc.Document;
 
-            FilteredElementCollector a = new FilteredElementCollector(doc).OfClass(typeof(Family));
-            Family family = a.FirstOrDefault<Element>(e => e.Name.Equals("DiagramaUnifilar")) as Family;
-            if (null == family)
+            #region <-- Checking diagrams' family loading situation -->
+            FilteredElementCollector familiesCollection = new FilteredElementCollector(doc).OfClass(typeof(Family));
+            Family family = familiesCollection.FirstOrDefault<Element>(e => e.Name.Equals("DiagramaUnifilar")) as Family;
+
+            if (family != null)
             {
-                TaskDialog.Show("PEDRO ELÉTRICA - ERRO", "Família Diagrama Unifilar não está carregada no projeto.");
-                return Result.Failed;
-            }
-            else
-            {
-                List<ElementId> temp = family.GetFamilySymbolIds().ToList();
-                FamilySymbol symbol = doc.GetElement(temp[0]) as FamilySymbol;
+                FamilySymbol symbol = doc.GetElement(family.GetFamilySymbolIds().ToList()[0]) as FamilySymbol;
+                #region <-- Setting the diagrams' position -->
                 if (uidoc.CanPlaceElementType(symbol))
                 {
-                    //public FamilyInstance NewFamilyInstance(DB.XYZ origin, DB.FamilySymbol symbol, View specView);
-                    XYZ pos = new XYZ();
-                    pos = uidoc.Selection.PickPoint();
-                    View view = doc.ActiveView;
-                    List<ElementId> _added_element_ids = new List<ElementId>();
+                    XYZ position = uidoc.Selection.PickPoint();
+                    Autodesk.Revit.DB.View view = doc.ActiveView;
+                    List<ElementId> addedElements = new List<ElementId>();
                     using (Transaction trans = new Transaction(doc, "Placing diagram"))
                     {
                         trans.Start();
-                        diagram = doc.Create.NewFamilyInstance(pos, symbol, view) as Element;
-
+                        diagram = doc.Create.NewFamilyInstance(position, symbol, view) as Element;
                         void OnDocumentChanged(object sender, DocumentChangedEventArgs e)
                         {
-                            _added_element_ids.AddRange(e.GetAddedElementIds());
+                            addedElements.AddRange(e.GetAddedElementIds());
                         }
                         trans.Commit();
-                    }
-                    //PromptForFamilyInstancePlacementOptions options = new PromptForFamilyInstancePlacementOptions();
-                    //uidoc.PromptForFamilyInstancePlacement(symbol, options);
-
-                    //Getting diagram element
-                    /*Reference refdiagram = uidoc.Selection.PickObject(Autodesk.Revit.UI.Selection.ObjectType.Element);
-                    ElementId diagramaId = refdiagram.ElementId;
-                    diagram = uidoc.Document.GetElement(diagramaId);*/
-
-                    //diagram = doc.GetElement(_added_element_ids[0]);z
-
-                    //Getting panel's name by asking it
-                    string quadro = Interaction.InputBox("INSIRA O NOME DO QUADRO", "PEDRO ELÉTRICA teste", "", -1, -1);
-
-                    //Getting the element by filtering and comparing to name of the panel
-                    List<BuiltInCategory> panelCategory = new List<BuiltInCategory>();
-                    panelCategory.Add(BuiltInCategory.OST_ElectricalEquipment);
-                    ElementMulticategoryFilter filter = new ElementMulticategoryFilter(panelCategory);
-                    IList<Element> possiblePanel = new FilteredElementCollector(doc).WherePasses(filter).ToElements();
-                    Element panel = null;
-                    bool verif = false;
-
-                    foreach (Element e in possiblePanel)
-                    {
-                        if (e.Name.ToUpper() == quadro.ToUpper())
-                        {
-                            panel = e;
-                            verif = true;
-                            break;
-                        }
-                    }
-
-                    if (!verif)
-                    {
-                        TaskDialog.Show("PEDRO ELÉTRICA", "Nenhum quadro encontrado com esse nome.");
-                    }
-                    else
-                    {
-                        List<Autodesk.Revit.DB.Electrical.ElectricalSystem> outOrderCircuitList = new List<Autodesk.Revit.DB.Electrical.ElectricalSystem>();
-                        PanelClass panelclass = new PanelClass(doc, panel); // PROTOTYPE VERSION - THE FINAL ONE SHOULD GET THE CIRCUIT LIST FROM PANEL LIST IN THE MAIN CLASS INSTEAD OF CREATING A PANELCLASS OBJECT HERE
-                        foreach (Autodesk.Revit.DB.Electrical.ElectricalSystem circuit in panelclass.circuits)
-                        {
-                            outOrderCircuitList.Add(circuit);
-                        }
-
-                        foreach (Autodesk.Revit.DB.Electrical.ElectricalSystem c in outOrderCircuitList)
-                        {
-                            Parameter DR = c.LookupParameter("DR");
-                            Parameter vDR = c.LookupParameter("vDR");
-                            if (DR.AsString() == "" || DR.AsString() == " " || DR.AsString() == "   " || DR == null)
-                            {
-                                using (Transaction trans = new Transaction(doc, "DRgroup e vDR"))
-                                {
-                                    trans.Start();
-                                    DR.Set("0");
-                                    vDR.Set("0");
-                                    trans.Commit();
-                                }
-                            }
-                        }
-
-                        var inOrder = from sublist in outOrderCircuitList orderby sublist.StartSlot ascending select sublist;
-                        List<Autodesk.Revit.DB.Electrical.ElectricalSystem> circuitList = new List<Autodesk.Revit.DB.Electrical.ElectricalSystem>();
-                        foreach (Autodesk.Revit.DB.Electrical.ElectricalSystem c in inOrder)
-                        {
-                            circuitList.Add(c);
-                        }
-
-                        inOrder = from sublist in circuitList orderby System.Convert.ToInt32(sublist.LookupParameter("DR").AsString()) ascending select sublist;
-                        List<Autodesk.Revit.DB.Electrical.ElectricalSystem> newCircuitList = new List<Autodesk.Revit.DB.Electrical.ElectricalSystem>();
-                        foreach (Autodesk.Revit.DB.Electrical.ElectricalSystem c in inOrder)
-                        {
-                            newCircuitList.Add(c);
-                        }
-
-                        this.circuitList = newCircuitList;
-
-                        List<List<String>> parametersOfCircuits = new List<List<String>>();
-                        int sum = 0;
-                        String drNumber = "";
-                        DrawDiagram(doc);
                     }
                 }
                 else
                 {
-                    TaskDialog.Show("PEDRO ELÉTRICA - ERRO", "Não é possível colocar o diagrama nessa vista/layout.");
+                    TaskDialog.Show("EasyElétrica", "Não é possível colocar o diagrama nessa vista/layout, tente novamente em outra vista 2D.");
+                    return Result.Failed;
                 }
+                #endregion
+
+                #region <-- Selecting the panel -->
+                FilteredElementCollector panelsCollection = new FilteredElementCollector(doc).OfClass(typeof(FamilyInstance)).OfCategory(BuiltInCategory.OST_ElectricalEquipment);
+                List<String> panelsName = (from p in panelsCollection where p != null select (p as FamilyInstance).Name).ToList();
+
+                MenuList ml = new MenuList("Selecione o quadro: ", panelsName);
+                ml.label2.Visible = false;
+                ml.textBox1.Visible = false;
+                System.Drawing.Point pt = new System.Drawing.Point(244, 100);
+                ml.button1.Location = pt;
+                Size size = new Size(344, 150);
+                ml.Size = size;
+                Application.Run(ml);
+
+                Element panel = panelsCollection.First(a => a.Name == ml.ItemSelected().First());
+                #endregion
+
+                #region <-- Getting circuits information -->
+                if (panel == null)
+                {
+                    TaskDialog.Show("PEDRO ELÉTRICA", "Nenhum quadro encontrado com esse nome.");
+                    return Result.Failed;
+                }
+                else
+                {
+                    #region <-- Getting the circuits from the panel -->
+                    List<Autodesk.Revit.DB.Electrical.ElectricalSystem> outOrderCircuitList = new List<Autodesk.Revit.DB.Electrical.ElectricalSystem>();
+                    PanelClass panelclass = new PanelClass(doc, panel); // PROTOTYPE VERSION - THE FINAL ONE SHOULD GET THE CIRCUIT LIST FROM PANEL LIST IN THE MAIN CLASS INSTEAD OF CREATING A PANELCLASS OBJECT HERE
+                    foreach (Autodesk.Revit.DB.Electrical.ElectricalSystem circuit in panelclass.circuits)
+                    {
+                        outOrderCircuitList.Add(circuit);
+                    }
+
+                    #endregion
+
+                    #region <-- Getting DR parameters -->
+
+                    foreach (Autodesk.Revit.DB.Electrical.ElectricalSystem c in outOrderCircuitList)
+                    {
+                        Parameter DR = c.LookupParameter("DR");
+                        Parameter vDR = c.LookupParameter("vDR");
+                        if (DR.AsString() == "" || DR.AsString() == " " || DR.AsString() == "   " || DR == null)
+                        {
+                            using (Transaction trans = new Transaction(doc, "Inserting DR values and groups to 0, when not specified."))
+                            {
+                                trans.Start();
+                                DR.Set("0");
+                                vDR.Set("0");
+                                trans.Commit();
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    #region <-- Sorting by the circuit number -->
+
+                    var inOrder = from sublist in outOrderCircuitList orderby sublist.StartSlot ascending select sublist;
+                    List<Autodesk.Revit.DB.Electrical.ElectricalSystem> circuitList = new List<Autodesk.Revit.DB.Electrical.ElectricalSystem>();
+                    foreach (Autodesk.Revit.DB.Electrical.ElectricalSystem c in inOrder)
+                    {
+                        circuitList.Add(c);
+                    }
+
+                    #endregion
+
+                    #region <-- Sorting by the DR group number -->
+
+                    inOrder = from sublist in circuitList orderby System.Convert.ToInt32(sublist.LookupParameter("DR").AsString()) ascending select sublist;
+                    List<Autodesk.Revit.DB.Electrical.ElectricalSystem> newCircuitList = new List<Autodesk.Revit.DB.Electrical.ElectricalSystem>();
+                    foreach (Autodesk.Revit.DB.Electrical.ElectricalSystem c in inOrder)
+                    {
+                        newCircuitList.Add(c);
+                    }
+
+                    #endregion
+
+                    this.circuitList = newCircuitList;
 
 
+                    int sum = 0;
+                    String drNumber = "";
+                    DrawDiagram(doc);
+                }
+                #endregion
             }
-
-
-
+            else
+            {
+                TaskDialog.Show("EasyElétrica", "Família Diagrama Unifilar não está carregada no projeto, ou nome informado está incorreto.");
+                return Result.Failed;
+            }
+            #endregion
             return Result.Succeeded;
         }
 
@@ -178,7 +175,6 @@ namespace TCC
 
                     //SETTING WIRE SIZE
                     this.diagramParameters[a][3].Set(this.circuitParameters[a][3]);
-                    //this.diagramParameters[a][3].Set(Bitola(this.circuitParameters[a][3]));
 
                     //RATING
                     this.diagramParameters[a][4].Set(this.circuitParameters[a][4]);
@@ -187,23 +183,14 @@ namespace TCC
                     if (this.circuitParameters[a][5] == "1")
                     {
                         this.diagramParameters[a][5].Set(1);
-                        /*this.diagramParameters[a][8].Set(0);
-                        this.diagramParameters[a][9].Set(1);
-                        this.diagramParameters[a][10].Set(0);*/
                     }
                     else if (this.circuitParameters[a][5] == "2")
                     {
                         this.diagramParameters[a][5].Set(2);
-                        /*this.diagramParameters[a][8].Set(1);
-                        this.diagramParameters[a][9].Set(0);
-                        this.diagramParameters[a][10].Set(1);*/
                     }
                     else
                     {
                         this.diagramParameters[a][5].Set(3);
-                        /*this.diagramParameters[a][8].Set(1);
-                        this.diagramParameters[a][9].Set(1);
-                        this.diagramParameters[a][10].Set(1);*/
                     }
 
                     //DR
@@ -236,7 +223,6 @@ namespace TCC
             }
         }
 
-
         private List<List<String>> GettingCircuitsParamaters(List<Autodesk.Revit.DB.Electrical.ElectricalSystem> circuitList)
         { 
             List<List<String>> output = new List<List<String>>();
@@ -251,7 +237,6 @@ namespace TCC
                 String par3 = c.get_Parameter(BuiltInParameter.RBS_ELEC_APPARENT_LOAD).AsValueString();
                 int pos = par3.IndexOf(" VA", 0);
                 par3 = par3.Substring(0, pos + 1).Trim();
-                //String par4 = c.get_Parameter(BuiltInParameter.RBS_ELEC_CIRCUIT_WIRE_SIZE_PARAM).AsString();
                 Parameter bitola = c.LookupParameter("Seção do Condutor Adotado (mm²)");
                 String par4 = bitola.AsDouble().ToString();
                 String par5 = "" + (c.get_Parameter(BuiltInParameter.RBS_ELEC_CIRCUIT_RATING_PARAM).AsDouble());          
@@ -272,7 +257,6 @@ namespace TCC
             List<List<Parameter>> output = new List<List<Parameter>>();
             List<String> parametersNames = new List<String>{"u_Numero", "u_Nome", "u_Potencia", "u_Bitola", "u_Disjuntor", "u_QuantidadeFases",
                                                             "u_distComIDR", "u_comIDR", "u_IDR", "u_SepBar", "u_Visible"};
-                                                            //"u_SepBar", "Unifilar-SepBar", "u_IDR"};
             int a = 0;
             foreach(int i in Enumerable.Range(1,circuitCounter))
             {

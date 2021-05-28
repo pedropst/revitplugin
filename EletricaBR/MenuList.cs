@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TCC
+namespace EasyEletrica
 {
     public partial class MenuList : System.Windows.Forms.Form
     {
@@ -32,5 +32,9 @@ namespace TCC
             //return collector.First(a => a.Name == ItemSelected()).Id;
         }
 
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

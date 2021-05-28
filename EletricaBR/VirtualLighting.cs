@@ -9,7 +9,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System.Numerics;
 
-namespace TCC
+namespace EasyEletrica
 {
     public class VirtualLighting
     {

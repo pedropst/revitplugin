@@ -1,5 +1,5 @@
 ﻿
-namespace TCC
+namespace EasyEletrica
 {
     partial class WindowList
     {

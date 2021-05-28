@@ -10,7 +10,7 @@ using Autodesk.Revit.UI;
 
 using System.Numerics;
 
-namespace TCC
+namespace EasyEletrica
 {
     [Serializable()]
     public class VirtualConduit
