@@ -10,6 +10,107 @@ using Autodesk.Revit.UI;
 
 namespace EasyEletrica
 {
+    struct DiagramLine
+    {
+        public Dictionary<string, string> dParametersAndValues1 { get; set; }
+        public Dictionary<string, string> dParametersAndrParamenters1 { get; set; }
+        public Dictionary<string, string> rParametersAndHowToGetIt1 { get; set; }
+
+        public DiagramLine(Autodesk.Revit.DB.Electrical.ElectricalSystem circuit)
+        {
+            Dictionary<string, string> dParametersAndValues = new Dictionary<string, string>();
+            Dictionary<string, string> dParametersAndrParamenters = new Dictionary<string, string>();
+            Dictionary<string, string> rParametersAndHowToGetIt = new Dictionary<string, string>();
+
+            #region <-- Diagram parameters and the value to set -->
+            dParametersAndValues.Add("nome", "");
+            dParametersAndValues.Add("numero", "");
+            dParametersAndValues.Add("potencia", "");
+            dParametersAndValues.Add("bitola", "");
+            dParametersAndValues.Add("disjuntor", "");
+            dParametersAndValues.Add("quantidade_fases", "");
+            dParametersAndValues.Add("distancia_idr_e_dj", "");
+            dParametersAndValues.Add("temIDR", "");
+            dParametersAndValues.Add("valorIDR", "");
+            dParametersAndValues.Add("uniaoIDR", "");
+            #endregion
+            #region <-- Diagrama parameters and Revit parameters -->
+            dParametersAndrParamenters.Add("RBS_ELEC_CIRCUIT_NAME", "nome");
+            dParametersAndrParamenters.Add("RBS_ELEC_CIRCUIT_NUMBER", "numero");
+            dParametersAndrParamenters.Add("RBS_ELEC_APPARENT_LOAD", "potencia");
+            dParametersAndrParamenters.Add("RBS_ELEC_CIRCUIT_RATING_PARAM", "disjuntor");
+            dParametersAndrParamenters.Add("RBS_ELEC_NUMBER_OF_POLES", "quantidade_fases");
+            dParametersAndrParamenters.Add("Seção do Condutor Adotado (mm²)", "bitola");
+            dParametersAndrParamenters.Add("DR", "temIDR");
+            dParametersAndrParamenters.Add("vDR", "valorIDR");
+            #endregion
+            #region <-- Revit parameters and how to get them - Dictionary -->
+            rParametersAndHowToGetIt.Add("RBS_ELEC_CIRCUIT_NUMBER", "builtin");
+            rParametersAndHowToGetIt.Add("RBS_ELEC_CIRCUIT_NAME", "builtin");
+            rParametersAndHowToGetIt.Add("RBS_ELEC_APPARENT_LOAD", "builtin");
+            rParametersAndHowToGetIt.Add("RBS_ELEC_CIRCUIT_RATING_PARAM", "builtin");
+            rParametersAndHowToGetIt.Add("RBS_ELEC_NUMBER_OF_POLES", "builtin");
+            /*rParametersAndHowToGetIt.Add("RBS_ELEC_APPARENT_CURRENT_PHASEA_PARAM", "builtin");
+            rParametersAndHowToGetIt.Add("RBS_ELEC_APPARENT_CURRENT_PHASEB_PARAM", "builtin");
+            rParametersAndHowToGetIt.Add("RBS_ELEC_APPARENT_CURRENT_PHASEC_PARAM", "builtin");*/
+            rParametersAndHowToGetIt.Add("Seção do Condutor Adotado (mm²)", "lookup");
+            rParametersAndHowToGetIt.Add("DR", "lookup");
+            rParametersAndHowToGetIt.Add("vDR", "lookup");
+            #endregion
+
+            foreach (String key in rParametersAndHowToGetIt.Keys)
+            {
+                
+                string value = rParametersAndHowToGetIt[key];
+                //rParametersAndHowToGetIt.TryGetValue(key, out value);
+
+                if (value == "builtin")
+                {
+                    foreach (BuiltInParameter bip in Enum.GetValues(typeof(BuiltInParameter)))
+                    {
+                        Parameter param = circuit.get_Parameter(bip);
+                        if (param != null)
+                        {
+                            if (bip.ToString() == key)
+                            {
+                                string correlacao = dParametersAndrParamenters[key];
+                                //dParametersAndrParamenters.TryGetValue(key, out correlacao);
+
+                                if (param.AsString() != null)
+                                {
+                                    dParametersAndValues[correlacao] = param.AsString();
+                                }
+                                else
+                                {
+                                    dParametersAndValues[correlacao] = param.AsValueString();
+                                }
+                                
+                            }
+                        }
+
+                    }
+                }
+                else if (value == "lookup")
+                {
+                    string correlacao = dParametersAndrParamenters[key];
+                    //dParametersAndrParamenters.TryGetValue(key, out correlacao);
+                    if (key == "DR")
+                    {
+                        if (circuit.LookupParameter(key).AsString() == null || circuit.LookupParameter(key).AsString() == "0" || circuit.LookupParameter(key).AsString() == " ")
+                        {
+                            
+                        }
+                    }
+                    dParametersAndValues[correlacao] = circuit.LookupParameter(key).AsString();
+                }
+            }
+
+            this.dParametersAndrParamenters1 = dParametersAndrParamenters;
+            this.rParametersAndHowToGetIt1 = rParametersAndHowToGetIt;
+            this.dParametersAndValues1 = dParametersAndValues;
+        }
+    }
+
     [TransactionAttribute(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]
     class DiagramaUnifilar : IExternalCommand
@@ -19,6 +120,9 @@ namespace EasyEletrica
         List<List<String>> circuitParameters = new List<List<String>>();
         List<List<Parameter>> diagramParameters = new List<List<Parameter>>();
         List<List<String>> parametersOfCircuits = new List<List<String>>();
+        XYZ position;
+        Autodesk.Revit.DB.View view;
+        FamilySymbol symbol;
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
@@ -27,21 +131,21 @@ namespace EasyEletrica
 
             #region <-- Checking diagrams' family loading situation -->
             FilteredElementCollector familiesCollection = new FilteredElementCollector(doc).OfClass(typeof(Family));
-            Family family = familiesCollection.FirstOrDefault<Element>(e => e.Name.Equals("DiagramaUnifilar")) as Family;
+            Family family = familiesCollection.FirstOrDefault<Element>(e => e.Name.Equals("modulo")) as Family;
 
             if (family != null)
             {
-                FamilySymbol symbol = doc.GetElement(family.GetFamilySymbolIds().ToList()[0]) as FamilySymbol;
+                this.symbol = doc.GetElement(family.GetFamilySymbolIds().ToList()[0]) as FamilySymbol;
                 #region <-- Setting the diagrams' position -->
-                if (uidoc.CanPlaceElementType(symbol))
+                if (uidoc.CanPlaceElementType(this.symbol))
                 {
-                    XYZ position = uidoc.Selection.PickPoint();
-                    Autodesk.Revit.DB.View view = doc.ActiveView;
+                    this.position = uidoc.Selection.PickPoint();
+                    this.view = doc.ActiveView;
                     List<ElementId> addedElements = new List<ElementId>();
                     using (Transaction trans = new Transaction(doc, "Placing diagram"))
                     {
                         trans.Start();
-                        diagram = doc.Create.NewFamilyInstance(position, symbol, view) as Element;
+                        this.diagram = doc.Create.NewFamilyInstance(this.position, this.symbol, this.view) as Element;
                         void OnDocumentChanged(object sender, DocumentChangedEventArgs e)
                         {
                             addedElements.AddRange(e.GetAddedElementIds());
@@ -137,7 +241,15 @@ namespace EasyEletrica
 
                     int sum = 0;
                     String drNumber = "";
-                    DrawDiagram(doc);
+
+                    List<DiagramLine> dls = new List<DiagramLine>();
+
+                    foreach (Autodesk.Revit.DB.Electrical.ElectricalSystem c in newCircuitList)
+                    {
+                        DiagramLine dl = new DiagramLine(c);
+                        dls.Add(dl);
+                    }
+                    DrawDiagram(doc, dls);
                 }
                 #endregion
             }
@@ -150,7 +262,7 @@ namespace EasyEletrica
             return Result.Succeeded;
         }
 
-        public void DrawDiagram(Document doc)
+        public void DrawDiagram(Document doc, List<DiagramLine> diagramLines)
         {
             int circuitCounter = this.circuitList.Count;
             this.circuitParameters = GettingCircuitsParamaters(this.circuitList);
@@ -159,6 +271,29 @@ namespace EasyEletrica
             {
                 trans.Start();
                 String stillSameGroupOfIDR = "";
+
+                foreach (DiagramLine dl in diagramLines)
+                {
+                    foreach (String key in dl.dParametersAndValues1.Keys)
+                    {
+                        if (key == "DR")
+                        {
+                            if (!(dl.dParametersAndrParamenters1[key] == "0" || dl.dParametersAndrParamenters1[key] == ""))
+                            {
+                                if (stillSameGroupOfIDR == key)
+                                { 
+                                    
+                                }
+                            }
+                            this.diagram.LookupParameter(key).Set(dl.dParametersAndValues1[key]);
+                            this.diagram = doc.Create.NewFamilyInstance(this.position + new XYZ(0f, -2.5f * (diagramLines.IndexOf(dl) + 1), 0f), this.symbol, this.view);
+                            stillSameGroupOfIDR = key;
+                        }
+                    }
+                }
+
+                /*
+
                 for (int a = 0; a < circuitCounter; a++)
                 {
                     //SETTING VISIBILITY
@@ -218,7 +353,7 @@ namespace EasyEletrica
                         this.diagramParameters[a][6].Set(0);
                         this.diagramParameters[a][7].Set(0);
                     }
-                }
+                }*/
                 trans.Commit();
             }
         }

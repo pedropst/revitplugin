@@ -84,7 +84,6 @@ namespace EasyEletrica
             this.conduit = null;
             this.wires = _wires;
         }
-
     }
     public struct Interruptor
     {
